@@ -17,8 +17,8 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<modules>
-		<module>ewm-stats-service</module>
-		<module>ewm-main-service</module>
+		<module>explore-with-me-server-main</module>
+		<module>explore-with-me-statistics</module>
 	</modules>
 
 	<packaging>pom</packaging>
