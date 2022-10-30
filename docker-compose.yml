@@ -25,7 +25,7 @@ services:
       - POSTGRES_PASSWORD=root
 
   ewm-service:
-    build: ewm-main-service/
+    build: explore-with-me-server-main/
     container_name: ewm_main_service
     ports:
       - "8080:8080"
