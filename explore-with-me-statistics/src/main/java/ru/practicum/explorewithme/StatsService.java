@@ -20,7 +20,7 @@ public class StatsService {
     }
 
     @GetMapping("/stats")
-    public List<StatsModel> stats(
+    public List<ViewsStats> stats(
             @RequestParam @DateTimeFormat LocalDateTime start,
             @RequestParam @DateTimeFormat LocalDateTime end,
             @RequestParam (required = false) List<String> uris,
@@ -32,16 +32,16 @@ public class StatsService {
         } else if (uris == null) {
             return statsRepository.findAll(start, end);
         } else if (unique) {
-            List<StatsModel> statModels = new ArrayList<>();
+            List<ViewsStats> statModels = new ArrayList<>();
             for (String uri : uris) {
-                StatsModel stats = statsRepository.findUnique(start, end, uri);
+                ViewsStats stats = statsRepository.findUnique(start, end, uri);
                 statModels.add(stats);
             }
             return statModels;
         } else {
-            List<StatsModel> statModels = new ArrayList<>();
+            List<ViewsStats> statModels = new ArrayList<>();
             for (String uri : uris) {
-                StatsModel stats = statsRepository.find(start, end, uri);
+                ViewsStats stats = statsRepository.find(start, end, uri);
                 statModels.add(stats);
             }
             return statModels;

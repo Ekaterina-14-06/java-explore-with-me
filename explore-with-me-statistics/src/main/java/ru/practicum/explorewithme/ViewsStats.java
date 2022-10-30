@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StatsModel {
+public class ViewsStats {
     private String app;
     private String uri;
     private long hits;
