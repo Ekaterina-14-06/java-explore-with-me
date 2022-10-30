@@ -3,7 +3,7 @@ package ru.practicum.explorewithme;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.explorewithme.EndpointHit;
-import ru.practicum.explorewithme.;
+import ru.practicum.explorewithme.ViewsStats;
 
 import java.time.LocalDateTime;
 import java.util.List;
