@@ -1,7 +1,7 @@
 version: '3.1'
 services:
   stats-server:
-    build: explore-with-me-statistics/
+    build: explore-with-me-statistics
     container_name: ewm_stats_service
     ports:
       - "9090:9090"
@@ -25,7 +25,7 @@ services:
       - POSTGRES_PASSWORD=root
 
   ewm-service:
-    build: explore-with-me-server-main/
+    build: explore-with-me-server-main
     container_name: ewm_main_service
     ports:
       - "8080:8080"
