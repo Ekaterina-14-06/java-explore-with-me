@@ -2,6 +2,7 @@ package ru.practicum.explorewithme;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -10,11 +11,13 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class StatsService {
 
     private final StatsRepository statsRepository;
 
     @PostMapping("/hit")
+    @Transactional
     public void hit(@RequestBody EndpointHit endpointHit) {
         statsRepository.save(endpointHit);
     }
