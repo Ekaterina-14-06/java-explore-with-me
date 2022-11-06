@@ -40,10 +40,7 @@ CREATE TABLE IF NOT EXISTS events
     state              VARCHAR(255)                            NOT NULL,
     title              VARCHAR(255)                            NOT NULL,
     views              INTEGER                                 NULL,
-    CONSTRAINT pk_events PRIMARY KEY (id),
-    CONSTRAINT EVENTS_TO_USERS_FK FOREIGN KEY (initiator_id) REFERENCES users (id) ON DELETE CASCADE,
-    CONSTRAINT EVENTS_TO_LOCATIONS_FK FOREIGN KEY (location_id) REFERENCES locations (id) ON DELETE CASCADE,
-    CONSTRAINT EVENTS_TO_CATEGORIES_FK FOREIGN KEY (category_id) REFERENCES categories (id) ON DELETE CASCADE
+    CONSTRAINT pk_events PRIMARY KEY (id)
 );
 
 CREATE TABLE IF NOT EXISTS participation_requests
