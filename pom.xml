@@ -15,6 +15,12 @@
 	<groupId>ru.practicum</groupId>
 	<artifactId>explore-with-me</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+
+	<modules>
+		<module>explore-with-me-server-main</module>
+		<module>explore-with-me-statistics</module>
+	</modules>
+
 	<packaging>pom</packaging>
 
 	<properties>
