@@ -1,6 +1,8 @@
 package ru.practicum.explorewithme.repository;
 
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithme.entity.enums.EventStatus;
 import ru.practicum.explorewithme.entity.Event;
 import org.springframework.data.domain.Pageable;
@@ -203,6 +205,27 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             LocalDateTime rangeEnd,
             Pageable pageable
     );
+
+    int countByInitiatorId(Long userId);
+
+    @Query("SELECT SUM(e.rate) FROM Event e " +
+            " WHERE e.initiator.id = :userId"
+    )
+    long sumRateByInitiatorId(Long userId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Transactional
+    @Query("UPDATE Event e " +
+            " SET e.rate = e.rate + 1 " +
+            " WHERE e.id = :eventId")
+    void incrementRate(Long eventId);
+
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Transactional
+    @Query("UPDATE Event e " +
+            " SET e.rate = e.rate - 1 " +
+            " WHERE e.id = :eventId")
+    void decrementRate(Long eventId);
 
     @Query("from Event e " +
             "where e.initiator.id in :users " +

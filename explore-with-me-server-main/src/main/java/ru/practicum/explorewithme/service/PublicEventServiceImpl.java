@@ -48,6 +48,9 @@ public class PublicEventServiceImpl implements PublicEventService {
         if (sort.equals(EventSort.EVENT_DATE)) {
             sortParam = "eventDate";
         }
+        if (sort.equals(EventSort.RATE)){
+            sortParam = "rate";
+        }
         PageRequest pageRequest = PageRequest.of(from / size, size, Sort.by(sortParam));
         if (text == null) {
             text = "";

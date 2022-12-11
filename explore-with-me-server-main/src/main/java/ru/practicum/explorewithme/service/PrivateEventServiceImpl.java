@@ -6,27 +6,22 @@ import org.springframework.data.domain.Sort;
 import org.springframework.expression.AccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.practicum.explorewithme.entity.Category;
-import ru.practicum.explorewithme.repository.CategoryRepository;
+import ru.practicum.explorewithme.entity.*;
+import ru.practicum.explorewithme.entity.enums.LikeType;
+import ru.practicum.explorewithme.exceptions.EwmException;
+import ru.practicum.explorewithme.repository.*;
 import ru.practicum.explorewithme.dto.EventFullDto;
 import ru.practicum.explorewithme.dto.EventShortDto;
 import ru.practicum.explorewithme.dto.NewEventDto;
 import ru.practicum.explorewithme.dto.UpdateEventRequest;
 import ru.practicum.explorewithme.entity.enums.EventStatus;
 import ru.practicum.explorewithme.mapper.EventMapper;
-import ru.practicum.explorewithme.entity.Event;
-import ru.practicum.explorewithme.entity.Location;
-import ru.practicum.explorewithme.repository.EventRepository;
-import ru.practicum.explorewithme.repository.LocationRepository;
 import ru.practicum.explorewithme.dto.ParticipationRequestDto;
 import ru.practicum.explorewithme.entity.enums.RequestStatus;
 import ru.practicum.explorewithme.mapper.RequestMapper;
-import ru.practicum.explorewithme.entity.ParticipationRequest;
-import ru.practicum.explorewithme.repository.RequestRepository;
-import ru.practicum.explorewithme.entity.User;
-import ru.practicum.explorewithme.repository.UserRepository;
 
 import javax.persistence.EntityNotFoundException;
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +37,12 @@ public class PrivateEventServiceImpl implements PrivateEventService {
     private final CategoryRepository categoryRepository;
 
     private final UserRepository userRepository;
+
+    private final LikeRepository likeRepository;
+
+    private final EventRepository eventsRepository;
+
+    private final UserRepository usersRepository;
 
     private final RequestRepository requestRepository;
 
@@ -90,13 +91,13 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         return eventMapper.toEventFullDto(savedEvent);
     }
 
-    @Override
-    public EventFullDto getEvent(long userId, long eventId) {
-        Optional<Event> foundEvent = eventRepository.findByIdAndInitiatorId(eventId, userId);
-        return eventMapper.toEventFullDto(
-                foundEvent
-                .orElseThrow(() -> new EntityNotFoundException("Unable to find Event id " + eventId))
+
+    private Event getEvent(Long eventId) throws AccessException {
+        Event event = eventsRepository.findById(eventId).orElseThrow(
+                () -> new AccessException("Event ID not found.")
         );
+
+        return event;
     }
 
     @Override
@@ -176,6 +177,79 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         return requestMapper.toParticipationRequestDto(confirmedRequest);
     }
 
+    @Override
+    @Transactional
+    public void addLike(Long userId, Long eventId, LikeType likeType)
+            throws AccessException {
+        Event event = getEvent(eventId);
+        if (!userRepository.existsById(userId)) {
+            throw new AccessException("User not found.");
+        }
+        if (userId.equals(event.getInitiator().getId())) {
+            throw new AccessException("Your event");
+        }
+
+        Optional<Like> like = likeRepository.findByEventIdAndUserId(userId, eventId);
+        if (like.isPresent()) {
+            if (like.get().getType() != likeType) {
+                LikeType deleteType = LikeType.LIKE;
+                if (likeType == LikeType.LIKE) {
+                    deleteType = LikeType.DISLIKE;
+                }
+                removeLike(userId, eventId, deleteType);
+            } else {
+                throw new AccessException("Second Like!");
+            }
+        }
+        likeRepository.saveAndFlush(new Like(null, userId, eventId, likeType));
+        if (likeType == LikeType.LIKE) {
+            eventsRepository.incrementRate(eventId);
+        } else {
+            eventsRepository.decrementRate(eventId);
+        }
+
+        User initiator = event.getInitiator();
+        //User initiator = event.getInitiator();
+        initiator.setRate(getRate(initiator.getId()));
+        usersRepository.save(initiator);
+    }
+
+
+    @Override
+    @Transactional
+    public void removeLike(Long userId, Long eventId, LikeType likeType)
+            throws AccessException {
+        Event event = getEvent(eventId);
+        if (!userRepository.existsById(userId)) {
+            throw new AccessException("User not found.");
+        }
+        if (userId.equals(event.getInitiator().getId())) {
+            throw new AccessException("Your event");
+        }
+
+        Like like = likeRepository.findByUserIdAndEventIdAndType(userId, eventId, likeType)
+                .orElseThrow(
+                        () -> new AccessException(likeType + " not found.")
+                );
+        likeRepository.delete(like);
+
+        if (likeType == LikeType.LIKE) {
+            eventsRepository.decrementRate(eventId);
+        } else {
+            eventsRepository.incrementRate(eventId);
+        }
+
+        User initiator = event.getInitiator();
+        initiator.setRate(getRate(initiator.getId()));
+        usersRepository.save(initiator);
+    }
+    private Float getRate(Long userId) {
+        int count = eventsRepository.countByInitiatorId(userId);
+        long rate = eventsRepository.sumRateByInitiatorId(userId);
+
+        return count == 0 ? 0.0F : (1.0F * rate / count);
+    }
+
     private Event patch(UpdateEventRequest updateEventRequest) {
         Event savedEvent = eventRepository.getReferenceById(updateEventRequest.getEventId());
         if (updateEventRequest.getAnnotation() != null) {
@@ -207,6 +281,15 @@ public class PrivateEventServiceImpl implements PrivateEventService {
             savedEvent.setState(EventStatus.PENDING);
         }
         return savedEvent;
+    }
+
+    @Override
+    public EventFullDto getEvent(long userId, long eventId) {
+        Optional<Event> foundEvent = eventRepository.findByIdAndInitiatorId(eventId, userId);
+        return eventMapper.toEventFullDto(
+                foundEvent
+                        .orElseThrow(() -> new EntityNotFoundException("Unable to find Event id " + eventId))
+        );
     }
 
 }

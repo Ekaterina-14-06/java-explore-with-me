@@ -6,7 +6,9 @@ import ru.practicum.explorewithme.dto.EventShortDto;
 import ru.practicum.explorewithme.dto.NewEventDto;
 import ru.practicum.explorewithme.dto.UpdateEventRequest;
 import ru.practicum.explorewithme.dto.ParticipationRequestDto;
+import ru.practicum.explorewithme.entity.enums.LikeType;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 public interface PrivateEventService {
@@ -26,4 +28,8 @@ public interface PrivateEventService {
     ParticipationRequestDto confirmRequest(long userId, long eventId, long reqId) throws AccessException;
 
     ParticipationRequestDto rejectRequest(long userId, long eventId, long reqId) throws AccessException;
+
+    void addLike(Long userId, Long eventId, LikeType likeType) throws AccessException;
+
+    void removeLike(Long userId, Long eventId, LikeType likeType) throws AccessException;
 }

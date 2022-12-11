@@ -13,7 +13,7 @@ import java.util.List;
 @ToString
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "events")
+@Table(name = "events", schema = "public")
 public class Event {
     @Column(name = "annotation", columnDefinition = "text")
     private String annotation;
@@ -68,5 +68,9 @@ public class Event {
 
     @Column
     private long views;
+
+    @Column(name="rate")
+    //@Builder.Default
+    private Integer rate;
 
 }

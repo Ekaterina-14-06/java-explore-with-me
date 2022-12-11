@@ -17,4 +17,5 @@ public class UserDto {
     private long id;
     @NotBlank
     private String name;
+    private Float rate;
 }

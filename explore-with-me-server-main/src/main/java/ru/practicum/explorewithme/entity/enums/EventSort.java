@@ -4,7 +4,8 @@ import java.util.Optional;
 
 public enum EventSort {
     EVENT_DATE,
-    VIEWS;
+    VIEWS,
+    RATE;
 
     public static Optional<EventSort> from(String sortParam) {
         for (EventSort sort : values()) {

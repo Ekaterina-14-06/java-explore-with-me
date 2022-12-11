@@ -32,20 +32,20 @@ public class EventMapper {
                 userMapper.toUserShortDto(event.getInitiator()),
                 event.isPaid(),
                 event.getTitle(),
-                event.getViews()
+                event.getViews(),
+                event.getRate()
         );
     }
 
     public EventFullDto toEventFullDto(Event event) {
-        return new EventFullDto(
-                event.getAnnotation(),
+        return new EventFullDto(event.getAnnotation(),
                 categoryMapper.toCategoryDto(event.getCategory()),
                 event.getConfirmedRequests().size(),
                 event.getCreatedOn(),
                 event.getDescription(),
                 event.getEventDate(),
                 event.getId(),
-                userMapper.toUserShortDto(event.getInitiator()),
+                userMapper.toUserDto(event.getInitiator()),
                 event.getLocation(),
                 event.isPaid(),
                 event.getParticipantLimit(),
@@ -53,7 +53,8 @@ public class EventMapper {
                 event.isRequestModeration(),
                 event.getState(),
                 event.getTitle(),
-                event.getViews()
+                event.getViews(),
+                event.getRate()
         );
     }
 
@@ -74,7 +75,8 @@ public class EventMapper {
                 newEventDto.isRequestModeration(),
                 EventStatus.PENDING,
                 newEventDto.getTitle(),
-                0
+                0,
+                newEventDto.getRate()
         );
     }
 

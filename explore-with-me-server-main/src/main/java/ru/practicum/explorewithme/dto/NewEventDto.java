@@ -24,4 +24,5 @@ public class NewEventDto {
     private boolean requestModeration;
     @NotBlank
     private String title;
+    private int rate;
 }

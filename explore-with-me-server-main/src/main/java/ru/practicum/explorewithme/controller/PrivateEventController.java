@@ -8,12 +8,14 @@ import ru.practicum.explorewithme.dto.EventFullDto;
 import ru.practicum.explorewithme.dto.EventShortDto;
 import ru.practicum.explorewithme.dto.NewEventDto;
 import ru.practicum.explorewithme.dto.UpdateEventRequest;
+import ru.practicum.explorewithme.entity.enums.LikeType;
 import ru.practicum.explorewithme.service.PrivateEventService;
 import ru.practicum.explorewithme.dto.ParticipationRequestDto;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
+import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -94,5 +96,45 @@ public class PrivateEventController {
             @PathVariable long reqId
     ) throws AccessException {
         return privateEventService.rejectRequest(userId, eventId, reqId);
+    }
+
+    @PostMapping("/{eventId}/like")
+    public void addLike(
+            @Positive @PathVariable Long userId,
+            @Positive @PathVariable Long eventId
+    ) throws AccessException {
+        LikeType likeType = LikeType.from("like")
+                .orElseThrow(() -> new IllegalArgumentException("Unknown type: " + "like"));
+        privateEventService.addLike(userId, eventId, likeType);
+    }
+
+    @PostMapping("/{eventId}/dislike")
+    public void addDislike(
+            @Positive @PathVariable Long userId,
+            @Positive @PathVariable Long eventId
+    ) throws AccessException {
+        LikeType likeType = LikeType.from("dislike")
+                .orElseThrow(() -> new IllegalArgumentException("dislike"));
+        privateEventService.addLike(userId, eventId, likeType);
+    }
+
+    @DeleteMapping("/{eventId}/like")
+    public void removeLike(
+            @Positive @PathVariable Long userId,
+            @Positive @PathVariable Long eventId
+    ) throws AccessException {
+        LikeType likeType = LikeType.from("like")
+                .orElseThrow(() -> new IllegalArgumentException("like"));
+        privateEventService.removeLike(userId, eventId, likeType);
+    }
+
+    @DeleteMapping("/{eventId}/dislike")
+    public void removeDislike(
+            @Positive @PathVariable Long userId,
+            @Positive @PathVariable Long eventId
+    ) throws AccessException {
+        LikeType likeType = LikeType.from("dislike")
+                .orElseThrow(() -> new IllegalArgumentException("dislike"));
+        privateEventService.removeLike(userId, eventId, likeType);
     }
 }
