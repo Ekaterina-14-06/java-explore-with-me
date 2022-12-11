@@ -8,7 +8,6 @@ import ru.practicum.explorewithme.dto.UpdateEventRequest;
 import ru.practicum.explorewithme.dto.ParticipationRequestDto;
 import ru.practicum.explorewithme.entity.enums.LikeType;
 
-import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 public interface PrivateEventService {

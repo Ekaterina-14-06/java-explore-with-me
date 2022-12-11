@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.explorewithme.entity.*;
 import ru.practicum.explorewithme.entity.enums.LikeType;
-import ru.practicum.explorewithme.exceptions.EwmException;
 import ru.practicum.explorewithme.repository.*;
 import ru.practicum.explorewithme.dto.EventFullDto;
 import ru.practicum.explorewithme.dto.EventShortDto;
@@ -21,7 +20,6 @@ import ru.practicum.explorewithme.entity.enums.RequestStatus;
 import ru.practicum.explorewithme.mapper.RequestMapper;
 
 import javax.persistence.EntityNotFoundException;
-import java.nio.file.AccessDeniedException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -243,6 +241,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
         initiator.setRate(getRate(initiator.getId()));
         usersRepository.save(initiator);
     }
+
     private Float getRate(Long userId) {
         int count = eventsRepository.countByInitiatorId(userId);
         long rate = eventsRepository.sumRateByInitiatorId(userId);
@@ -259,7 +258,7 @@ public class PrivateEventServiceImpl implements PrivateEventService {
             Optional<Category> patchCategory = categoryRepository.findById(updateEventRequest.getCategory());
             savedEvent.setCategory(
                     patchCategory
-                    .orElseThrow(() -> new EntityNotFoundException("Unable to find Category id " + updateEventRequest.getCategory()))
+                            .orElseThrow(() -> new EntityNotFoundException("Unable to find Category id " + updateEventRequest.getCategory()))
             );
         }
         if (updateEventRequest.getDescription() != null) {

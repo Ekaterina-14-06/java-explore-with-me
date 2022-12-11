@@ -69,8 +69,7 @@ public class Event {
     @Column
     private long views;
 
-    @Column(name="rate")
-    //@Builder.Default
+    @Column(name = "rate")
     private Integer rate;
 
 }

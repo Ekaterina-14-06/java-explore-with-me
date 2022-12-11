@@ -48,14 +48,14 @@ public class PublicEventServiceImpl implements PublicEventService {
         if (sort.equals(EventSort.EVENT_DATE)) {
             sortParam = "eventDate";
         }
-        if (sort.equals(EventSort.RATE)){
+        if (sort.equals(EventSort.RATE)) {
             sortParam = "rate";
         }
         PageRequest pageRequest = PageRequest.of(from / size, size, Sort.by(sortParam));
         if (text == null) {
             text = "";
         }
-        if (rangeStart ==  null) {
+        if (rangeStart == null) {
             rangeStart = LocalDateTime.now();
         }
         if (rangeEnd == null) {
@@ -91,7 +91,7 @@ public class PublicEventServiceImpl implements PublicEventService {
     @Override
     public EventFullDto getEvent(HttpServletRequest request, long eventId) {
         Event foundEvent = eventRepository.findByIdAndState(eventId, EventStatus.PUBLISHED)
-                .orElseThrow(() -> new  EntityNotFoundException("Unable to find Event id " + eventId));
+                .orElseThrow(() -> new EntityNotFoundException("Unable to find Event id " + eventId));
         foundEvent.setViews(statsClient.getViews(eventId));
         statsClient.hit(request);
         return eventMapper.toEventFullDto(foundEvent);
